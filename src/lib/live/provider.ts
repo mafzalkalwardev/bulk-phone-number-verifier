@@ -1,24 +1,15 @@
 /**
  * Live network status (HLR / carrier lookup).
- * Not configured in v1 — requires paid HLR API or SIGTRAN interconnect.
+ * Best available: www.hlr-lookups.com when HLR_API_KEY + HLR_API_SECRET are set.
  */
 
-export type LiveStatus = "active" | "absent" | "invalid" | "unknown" | "not_configured";
+import { createHlrLookupsProviderFromEnv } from "@/lib/live/hlr-lookups";
+import type {
+  LiveLookupProvider,
+  LiveLookupResult,
+} from "@/lib/live/types";
 
-export interface LiveLookupResult {
-  status: LiveStatus;
-  carrier?: string;
-  raw?: Record<string, unknown>;
-  provider: string;
-  configured: boolean;
-  message?: string;
-}
-
-export interface LiveLookupProvider {
-  readonly name: string;
-  readonly configured: boolean;
-  lookup(e164: string): Promise<LiveLookupResult>;
-}
+export type { LiveLookupProvider, LiveLookupResult, LiveStatus } from "@/lib/live/types";
 
 export class NotConfiguredLiveLookupProvider implements LiveLookupProvider {
   readonly name = "none";
@@ -30,19 +21,36 @@ export class NotConfiguredLiveLookupProvider implements LiveLookupProvider {
       provider: this.name,
       configured: false,
       message:
-        "Live network status is not configured. Structural validation and regulator block data are used instead. Plug in an HLR provider (Twilio Lookup, CM.com, CheckMobi) or SIGTRAN interconnect to enable currently-active checks.",
+        "Live HLR is not configured. Set HLR_API_KEY and HLR_API_SECRET from https://www.hlr-lookups.com/en/api-settings — until then only structural + regulator block checks run.",
     };
   }
 }
 
-let activeProvider: LiveLookupProvider = new NotConfiguredLiveLookupProvider();
-
-export function getLiveLookupProvider(): LiveLookupProvider {
-  return activeProvider;
-}
+let overrideProvider: LiveLookupProvider | null = null;
 
 export function setLiveLookupProvider(provider: LiveLookupProvider): void {
-  activeProvider = provider;
+  overrideProvider = provider;
+}
+
+export function getLiveLookupProvider(): LiveLookupProvider {
+  if (overrideProvider) return overrideProvider;
+
+  const fromEnv = createHlrLookupsProviderFromEnv();
+  if (fromEnv) return fromEnv;
+
+  return new NotConfiguredLiveLookupProvider();
+}
+
+export function isLiveLookupConfigured(): boolean {
+  return getLiveLookupProvider().configured;
+}
+
+/** Bulk jobs spend 1 credit per number when true (default once keys are set). */
+export function isBulkLiveLookupEnabled(): boolean {
+  if (!isLiveLookupConfigured()) return false;
+  const flag = process.env.HLR_BULK_ENABLED?.trim().toLowerCase();
+  if (flag === "false" || flag === "0" || flag === "off") return false;
+  return true;
 }
 
 export async function lookupLiveStatus(e164: string): Promise<LiveLookupResult> {

@@ -222,20 +222,26 @@ Public sources:
 
 ---
 
-## Live HLR (optional / future)
+## Live HLR (best available)
 
-See [`src/lib/live/provider.ts`](src/lib/live/provider.ts):
+Integrated provider: **[hlr-lookups.com](https://www.hlr-lookups.com/)** (official HTTP HLR API).
 
-```ts
-interface LiveLookupProvider {
-  lookup(e164: string): Promise<{
-    status: "active" | "absent" | "invalid" | "unknown" | "not_configured";
-    carrier?: string;
-  }>;
-}
+1. Create an account and copy keys from [API settings](https://www.hlr-lookups.com/en/api-settings)
+2. Put them in `.env`:
+
+```env
+HLR_API_KEY="your-key"
+HLR_API_SECRET="your-secret"
+HLR_BULK_ENABLED="true"
 ```
 
-Implement and call `setLiveLookupProvider(...)`. Until then the UI shows **Live status: Not configured**.
+3. Restart `npm run dev`
+4. Coverage page should show **Live HLR: Configured**
+5. Single check + bulk jobs return `CONNECTED` / `ABSENT` / `INVALID_MSISDN` mapped to `active` / `absent` / `invalid`
+
+Set `HLR_BULK_ENABLED=false` if you only want live checks on the single-number page (saves credits).
+
+Without keys, the app still runs structural + regulator-block cleanup.
 
 ---
 

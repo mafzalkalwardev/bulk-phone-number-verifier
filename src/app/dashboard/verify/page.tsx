@@ -17,6 +17,11 @@ interface Result {
   formats: { e164: string; international: string; national: string } | null;
   liveStatus: string;
   liveConfigured: boolean;
+  liveCarrier?: string | null;
+  liveConnectivity?: string | null;
+  livePorted?: boolean | null;
+  liveRoaming?: boolean | null;
+  liveDataSource?: string | null;
   liveMessage?: string;
 }
 
@@ -52,7 +57,8 @@ export default function VerifyPage() {
     <div style={{ maxWidth: 640 }}>
       <h1 style={{ marginBottom: "0.35rem" }}>Single check</h1>
       <p className="muted" style={{ marginTop: 0, marginBottom: "1.5rem" }}>
-        Validate one number with format rules and regulator block data.
+        Format + regulator blocks, plus live HLR when{" "}
+        <code>HLR_API_KEY</code> / <code>HLR_API_SECRET</code> are set.
       </p>
 
       <form onSubmit={onSubmit} className="card" style={{ padding: "1.5rem", display: "grid", gap: "1rem" }}>
@@ -101,10 +107,22 @@ export default function VerifyPage() {
               label="Live status"
               value={
                 result.liveConfigured
-                  ? result.liveStatus
+                  ? `${result.liveStatus}${result.liveConnectivity ? ` (${result.liveConnectivity})` : ""}`
                   : "Not configured"
               }
             />
+            {result.liveConfigured && (
+              <>
+                <Row label="Live carrier" value={result.liveCarrier || "—"} />
+                <Row
+                  label="Ported / roaming"
+                  value={`${result.livePorted == null ? "—" : result.livePorted ? "ported" : "not ported"} / ${
+                    result.liveRoaming == null ? "—" : result.liveRoaming ? "roaming" : "home"
+                  }`}
+                />
+                <Row label="HLR source" value={result.liveDataSource || "—"} />
+              </>
+            )}
           </dl>
           {result.liveMessage && (
             <p className="muted" style={{ fontSize: "0.85rem", marginTop: "1rem", marginBottom: 0 }}>

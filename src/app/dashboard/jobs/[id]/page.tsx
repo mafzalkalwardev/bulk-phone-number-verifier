@@ -31,7 +31,12 @@ interface Row {
   blockCarrier: string | null;
   blockSource: string | null;
   score: number;
-  raw?: { liveStatus?: string; liveConfigured?: boolean; liveMessage?: string };
+  raw?: {
+    liveStatus?: string;
+    liveConfigured?: boolean;
+    liveCarrier?: string | null;
+    liveMessage?: string;
+  };
 }
 
 export default function JobDetailPage() {
@@ -118,8 +123,11 @@ export default function JobDetailPage() {
           <a className="btn btn-ghost" href={`/api/jobs/${id}/export?filter=clean`}>
             Export clean
           </a>
-          <a className="btn btn-primary" href={`/api/jobs/${id}/export?filter=sms`}>
+          <a className="btn btn-ghost" href={`/api/jobs/${id}/export?filter=sms`}>
             Export SMS candidates
+          </a>
+          <a className="btn btn-primary" href={`/api/jobs/${id}/export?filter=live_active`}>
+            Export live active
           </a>
         </div>
       </div>
@@ -218,10 +226,28 @@ export default function JobDetailPage() {
                   ) : null}
                 </td>
                 <td>{row.score}</td>
-                <td style={{ fontSize: "0.8rem" }} className="muted">
-                  {row.raw?.liveConfigured
-                    ? row.raw.liveStatus
-                    : "Not configured"}
+                <td style={{ fontSize: "0.8rem" }}>
+                  {row.raw?.liveConfigured ? (
+                    <>
+                      <strong
+                        style={{
+                          color:
+                            row.raw.liveStatus === "active"
+                              ? "var(--accent)"
+                              : row.raw.liveStatus === "invalid"
+                                ? "var(--danger)"
+                                : "var(--warn)",
+                        }}
+                      >
+                        {String(row.raw.liveStatus)}
+                      </strong>
+                      {row.raw.liveCarrier ? (
+                        <div className="muted">{String(row.raw.liveCarrier)}</div>
+                      ) : null}
+                    </>
+                  ) : (
+                    <span className="muted">Not configured</span>
+                  )}
                 </td>
               </tr>
             ))}

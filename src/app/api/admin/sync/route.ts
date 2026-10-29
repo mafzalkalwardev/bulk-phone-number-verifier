@@ -5,6 +5,11 @@ import { syncBnetza } from "@/lib/importers/bnetza";
 import { syncNanpa, syncNanpaFromText } from "@/lib/importers/nanpa";
 import { syncOfcom, syncOfcomFromCsv } from "@/lib/importers/ofcom";
 import { seedNumberBlocks } from "@/lib/importers/seed-blocks";
+import {
+  getLiveLookupProvider,
+  isBulkLiveLookupEnabled,
+  isLiveLookupConfigured,
+} from "@/lib/live/provider";
 
 export async function GET() {
   const session = await auth();
@@ -24,21 +29,27 @@ export async function GET() {
   ]);
 
   const totalBlocks = await prisma.numberBlock.count();
-  const liveConfigured = Boolean(process.env.REDIS_URL); // informational; live HLR separate
+  const provider = getLiveLookupProvider();
+  const liveConfigured = isLiveLookupConfigured();
 
   return NextResponse.json({
     totalBlocks,
     blockCounts,
     syncRuns,
     liveLookup: {
-      configured: false,
-      message:
-        "Live HLR provider is not configured. Results are structural + regulator block only.",
+      configured: liveConfigured,
+      name: provider.name,
+      bulkEnabled: isBulkLiveLookupEnabled(),
+      signupUrl: "https://www.hlr-lookups.com/en/api-settings",
+      message: liveConfigured
+        ? `Live HLR via ${provider.name}. Bulk credit spend: ${
+            isBulkLiveLookupEnabled() ? "ON" : "OFF (HLR_BULK_ENABLED=false)"
+          }.`
+        : "Set HLR_API_KEY + HLR_API_SECRET in .env (hlr-lookups.com). Until then: structural + regulator blocks only.",
     },
     queue: {
       redis: Boolean(process.env.REDIS_URL?.trim()),
       mode: process.env.REDIS_URL?.trim() ? "bullmq" : "in-process",
-      redisConfiguredNote: liveConfigured,
     },
   });
 }

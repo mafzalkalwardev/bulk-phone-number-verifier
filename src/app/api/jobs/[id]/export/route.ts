@@ -22,10 +22,10 @@ export async function GET(
 
   const url = new URL(req.url);
   const filter = url.searchParams.get("filter") || "all";
-  // all | clean | sms | invalid | unallocated | structurally_valid | unknown
+  // all | clean | sms | live_active | invalid | unallocated | structurally_valid | unknown
 
   const where: Record<string, unknown> = { jobId: id };
-  if (filter === "clean" || filter === "sms") {
+  if (filter === "clean" || filter === "sms" || filter === "live_active") {
     where.classification = "structurally_valid";
     if (filter === "sms") {
       where.lineType = { in: ["mobile", "fixed_line_or_mobile"] };
@@ -34,31 +34,65 @@ export async function GET(
     where.classification = filter;
   }
 
-  const rows = await prisma.jobRow.findMany({
+  let rows = await prisma.jobRow.findMany({
     where,
     orderBy: { createdAt: "asc" },
   });
 
-  const data = rows.map((r) => ({
-    input: r.input,
-    e164: r.e164 || "",
-    country: r.country || "",
-    line_type: r.lineType || "",
-    classification: r.classification,
-    block_status: r.blockStatus || "",
-    block_prefix: r.blockPrefix || "",
-    block_carrier: r.blockCarrier || "",
-    block_source: r.blockSource || "",
-    score: r.score,
-    note:
-      r.classification === "structurally_valid"
-        ? "Structurally valid / block allocated — NOT live network active"
-        : r.classification === "unallocated"
-          ? "Regulator block marked free/unallocated"
-          : r.classification === "unknown"
-            ? "Valid format but no regulator block coverage"
-            : "Invalid numbering-plan format",
-  }));
+  if (filter === "live_active") {
+    rows = rows.filter((r) => {
+      if (!r.rawJson) return false;
+      try {
+        const raw = JSON.parse(r.rawJson) as { liveStatus?: string };
+        return raw.liveStatus === "active";
+      } catch {
+        return false;
+      }
+    });
+  }
+
+  const data = rows.map((r) => {
+    let live: Record<string, unknown> = {};
+    try {
+      live = r.rawJson ? (JSON.parse(r.rawJson) as Record<string, unknown>) : {};
+    } catch {
+      live = {};
+    }
+
+    const liveStatus = String(live.liveStatus || "");
+    return {
+      input: r.input,
+      e164: r.e164 || "",
+      country: r.country || "",
+      line_type: r.lineType || "",
+      classification: r.classification,
+      block_status: r.blockStatus || "",
+      block_prefix: r.blockPrefix || "",
+      block_carrier: r.blockCarrier || "",
+      block_source: r.blockSource || "",
+      score: r.score,
+      live_status: liveStatus,
+      live_connectivity: live.liveConnectivity || "",
+      live_carrier: live.liveCarrier || "",
+      live_ported: live.livePorted ?? "",
+      live_roaming: live.liveRoaming ?? "",
+      live_data_source: live.liveDataSource || "",
+      note:
+        liveStatus === "active"
+          ? "Live HLR: CONNECTED / active on network"
+          : liveStatus === "invalid"
+            ? "Live HLR: INVALID_MSISDN / dead"
+            : liveStatus === "absent"
+              ? "Live HLR: ABSENT (exists but unreachable now)"
+              : r.classification === "structurally_valid"
+                ? "Structurally valid / block allocated — live HLR not confirmed"
+                : r.classification === "unallocated"
+                  ? "Regulator block marked free/unallocated"
+                  : r.classification === "unknown"
+                    ? "Valid format but no regulator block coverage"
+                    : "Invalid numbering-plan format",
+    };
+  });
 
   const csv = Papa.unparse(data);
   const filename = `${job.name.replace(/[^\w.-]+/g, "_")}_${filter}.csv`;

@@ -37,7 +37,7 @@ export async function processJob(jobId: string): Promise<void> {
       for (const row of pending) {
         const result = await verifyNumber(row.input, job.defaultCountry, {
           useCache: true,
-          includeLive: true,
+          bulk: true,
         });
 
         await prisma.jobRow.update({

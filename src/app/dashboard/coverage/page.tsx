@@ -13,7 +13,13 @@ interface CoverageData {
     message: string | null;
     startedAt: string;
   }>;
-  liveLookup: { configured: boolean; message: string };
+  liveLookup: {
+    configured: boolean;
+    message: string;
+    name?: string;
+    bulkEnabled?: boolean;
+    signupUrl?: string;
+  };
   queue: { redis: boolean; mode: string };
 }
 
@@ -99,6 +105,24 @@ export default function CoveragePage() {
               <p className="muted" style={{ fontSize: "0.8rem", margin: "0.35rem 0 0", lineHeight: 1.4 }}>
                 {data.liveLookup.message}
               </p>
+              {data.liveLookup.signupUrl && !data.liveLookup.configured && (
+                <p style={{ margin: "0.5rem 0 0", fontSize: "0.85rem" }}>
+                  <a
+                    href={data.liveLookup.signupUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: "var(--accent)" }}
+                  >
+                    Get HLR API keys →
+                  </a>
+                </p>
+              )}
+              {data.liveLookup.configured && (
+                <p className="muted" style={{ margin: "0.5rem 0 0", fontSize: "0.8rem" }}>
+                  Provider: {data.liveLookup.name} · Bulk credits:{" "}
+                  {data.liveLookup.bulkEnabled ? "ON" : "OFF"}
+                </p>
+              )}
             </div>
           </div>
 
