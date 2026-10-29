@@ -1,0 +1,100 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  jobs         Job[]
+}
+
+model Job {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  status         String    @default("pending") // pending | processing | completed | failed
+  defaultCountry String    @default("US")
+  totalRows      Int       @default(0)
+  processedRows  Int       @default(0)
+  invalidCount   Int       @default(0)
+  unallocatedCount Int     @default(0)
+  validMobileCount Int     @default(0)
+  validOtherCount Int      @default(0)
+  unknownCount   Int       @default(0)
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  completedAt    DateTime?
+  rows           JobRow[]
+}
+
+model JobRow {
+  id            String   @id @default(cuid())
+  jobId         String
+  job           Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  input         String
+  e164          String?
+  country       String?
+  lineType      String?
+  classification String  @default("pending") // pending | invalid | unallocated | structurally_valid | unknown
+  blockStatus   String?  // allocated | free | unknown
+  blockPrefix   String?
+  blockCarrier  String?
+  blockSource   String?
+  score         Int      @default(0)
+  formatsJson   String?  // JSON string of formats
+  rawJson       String?
+  createdAt     DateTime @default(now())
+
+  @@index([jobId])
+  @@index([classification])
+  @@index([e164])
+}
+
+model NumberBlock {
+  id        String   @id @default(cuid())
+  country   String
+  prefix    String
+  status    String   // allocated | free
+  carrier   String?
+  ocn       String?
+  source    String   // nanpa | ofcom | bnetza | seed
+  metaJson  String?
+  syncedAt  DateTime @default(now())
+
+  @@unique([country, prefix])
+  @@index([country, prefix])
+  @@index([prefix])
+}
+
+model LookupCache {
+  id          String   @id @default(cuid())
+  e164        String   @unique
+  resultHash  String
+  resultJson  String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([expiresAt])
+}
+
+model SyncRun {
+  id          String   @id @default(cuid())
+  source      String
+  status      String   // running | completed | failed
+  rowsUpserted Int     @default(0)
+  message     String?
+  startedAt   DateTime @default(now())
+  finishedAt  DateTime?
+}
