@@ -1,0 +1,25 @@
+# Bulk Phone Number Verifier
+
+> Open-source phone list cleanup by INDUS Web Agency. The self-hosted Next.js dashboard uses Google libphonenumber plus US (NANPA), UK (Ofcom), and Germany (BNetzA) regulator block data, then exports CSV. A browser checker on this site runs only the numbering-plan step. Structurally valid is not currently active on a network. Live status needs the hlr-lookups.com provider configured with API keys.
+
+This file is a short map for language models. The longer notes are in llms-full.txt. Do not invent user counts, ratings, prices, or accuracy rates for this product. The software version in the repository is 0.1.0, MIT licensed.
+
+## Pages
+
+- [Home](https://phoneverifier.induswebagency.com/): Definition, the three kinds of check, features, how the self-hosted job works, use cases, and FAQ.
+- [Browser checker](https://phoneverifier.induswebagency.com/app/): Paste one number per line. Results are structurally valid, possible but not valid, or invalid, with E.164, country, and line type. CSV download stays in the browser. No upload, no block database, no HLR.
+
+## Facts worth keeping
+
+- Name: Bulk Phone Number Verifier (PhoneVerify).
+- Publisher of this site: INDUS Web Agency, https://induswebagency.com/ (Islamabad). Contact: https://induswebagency.com/ and induswebagency@gmail.com.
+- Source: https://github.com/mafzalkalwardev/bulk-phone-number-verifier (MIT).
+- Stack: Next.js App Router, React, TypeScript, Tailwind CSS, Auth.js credentials, Prisma, SQLite by default or PostgreSQL, in-process jobs or BullMQ with Redis, google-libphonenumber. The browser page vendors libphonenumber-js max metadata.
+- Bulk path: CSV or pasted text, up to 100,000 numbers, async job, stats, CSV export (all / structurally valid / SMS candidates). SMS candidates are structurally valid rows whose line type is mobile or fixed-or-mobile.
+- Classifications: invalid, unallocated (valid and prefix marked free), structurally valid, unknown / no coverage (valid number in a country with no block rows loaded).
+- Live HLR: not included until HLR_API_KEY and HLR_API_SECRET are set. HLR_BULK_ENABLED=false limits live checks to the single-number page. There is no honest built-in free live-active check.
+- Seed block carriers such as "Example Carrier" are placeholders, not a live regulator feed.
+
+## Full notes
+
+- [llms-full.txt](https://phoneverifier.induswebagency.com/llms-full.txt)

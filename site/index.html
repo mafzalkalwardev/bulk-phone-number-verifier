@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bulk Phone Number Verifier — list cleanup for SMS</title>
+  <meta name="description" content="Open-source bulk phone number verification: libphonenumber format checks, US/UK/DE regulator block assignment, CSV cleanup exports, and a Live HLR slot." />
+  <link rel="canonical" href="https://phoneverifier.induswebagency.com/" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#10241c" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Bulk Phone Number Verifier" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://phoneverifier.induswebagency.com/" />
+  <meta property="og:title" content="Bulk Phone Number Verifier — list cleanup for SMS" />
+  <meta property="og:description" content="Open-source bulk phone number verification: libphonenumber format checks, US/UK/DE regulator block assignment, CSV cleanup exports, and a Live HLR slot." />
+  <meta property="og:image" content="https://phoneverifier.induswebagency.com/og/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Bulk Phone Number Verifier: numbering-plan checks, US/UK/DE block assignment, and an optional Live HLR slot. Made by INDUS Web Agency." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Bulk Phone Number Verifier — list cleanup for SMS" />
+  <meta name="twitter:description" content="Open-source bulk phone number verification: libphonenumber format checks, US/UK/DE regulator block assignment, CSV cleanup exports, and a Live HLR slot." />
+  <meta name="twitter:image" content="https://phoneverifier.induswebagency.com/og/og.png" />
+  <meta name="twitter:image:alt" content="Bulk Phone Number Verifier: numbering-plan checks, US/UK/DE block assignment, and an optional Live HLR slot. Made by INDUS Web Agency." />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon.ico" sizes="32x32" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://induswebagency.com/#organization",
+        "name": "INDUS Web Agency",
+        "url": "https://induswebagency.com/",
+        "email": "induswebagency@gmail.com",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Islamabad",
+          "addressCountry": "PK"
+        }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://phoneverifier.induswebagency.com/#website",
+        "url": "https://phoneverifier.induswebagency.com/",
+        "name": "Bulk Phone Number Verifier",
+        "alternateName": "PhoneVerify",
+        "inLanguage": "en",
+        "publisher": { "@id": "https://induswebagency.com/#organization" },
+        "description": "Open-source bulk phone number verification: libphonenumber format checks, US/UK/DE regulator block assignment, CSV cleanup exports, and a Live HLR slot."
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://phoneverifier.induswebagency.com/#webpage",
+        "url": "https://phoneverifier.induswebagency.com/",
+        "name": "Bulk Phone Number Verifier",
+        "isPartOf": { "@id": "https://phoneverifier.induswebagency.com/#website" },
+        "about": { "@id": "https://phoneverifier.induswebagency.com/#software" },
+        "publisher": { "@id": "https://induswebagency.com/#organization" },
+        "inLanguage": "en",
+        "breadcrumb": { "@id": "https://phoneverifier.induswebagency.com/#breadcrumb" },
+        "primaryImageOfPage": {
+          "@type": "ImageObject",
+          "url": "https://phoneverifier.induswebagency.com/og/og.png",
+          "width": 1200,
+          "height": 630
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": "https://phoneverifier.induswebagency.com/#breadcrumb",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Bulk Phone Number Verifier",
+            "item": "https://phoneverifier.induswebagency.com/"
+          }
+        ]
+      },
+      {
+        "@type": ["SoftwareApplication", "SoftwareSourceCode"],
+        "@id": "https://phoneverifier.induswebagency.com/#software",
+        "name": "Bulk Phone Number Verifier",
+        "alternateName": "PhoneVerify",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web, Node.js 20+",
+        "softwareVersion": "0.1.0",
+        "url": "https://phoneverifier.induswebagency.com/",
+        "codeRepository": "https://github.com/mafzalkalwardev/bulk-phone-number-verifier",
+        "license": "https://github.com/mafzalkalwardev/bulk-phone-number-verifier/blob/main/LICENSE",
+        "isAccessibleForFree": true,
+        "programmingLanguage": "TypeScript",
+        "runtimePlatform": "Node.js",
+        "publisher": { "@id": "https://induswebagency.com/#organization" },
+        "description": "Self-hosted Next.js dashboard for cleaning phone lists with libphonenumber, US/UK/DE regulator block checks, CSV exports, and an optional Live HLR provider. A browser checker on this site runs numbering-plan validation only.",
+        "featureList": [
+          "Browser numbering-plan check with E.164, country, and line type",
+          "CSV download from the browser checker without uploading the list",
+          "Self-hosted CSV or paste upload up to 100,000 numbers",
+          "Async jobs with progress and classification stats",
+          "Single-number check",
+          "Classifications: structurally valid, unallocated, invalid, unknown",
+          "CSV export of all rows, structurally valid rows, or SMS candidates",
+          "US NANPA, UK Ofcom, and Germany BNetzA block sync hooks",
+          "Lookup cache with a configurable TTL",
+          "Optional hlr-lookups.com Live HLR provider"
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "@id": "https://phoneverifier.induswebagency.com/#howto",
+        "name": "Clean a bulk phone list with Bulk Phone Number Verifier",
+        "description": "Upload or paste numbers in the self-hosted dashboard, classify them with libphonenumber and US, UK, and Germany regulator blocks, then export a CSV. This does not mark a line as currently active unless a Live HLR provider is configured. The browser checker on this site only labels numbering-plan validity.",
+        "tool": [
+          { "@type": "HowToTool", "name": "Node.js 20 or newer" },
+          { "@type": "HowToTool", "name": "Bulk Phone Number Verifier" }
+        ],
+        "step": [
+          {
+            "@type": "HowToStep",
+            "position": 1,
+            "name": "Install and start the dashboard",
+            "text": "Clone the repository, copy .env.example to .env, install dependencies with npm, run the Prisma migration and the seed script, then start the app with npm run dev. You need Node.js 20 or newer.",
+            "url": "https://phoneverifier.induswebagency.com/#how"
+          },
+          {
+            "@type": "HowToStep",
+            "position": 2,
+            "name": "Upload a list",
+            "text": "Sign in, open Upload, and set the default country used when a number has no country code. Optionally name the CSV phone column. Upload a CSV or text file, or paste one number per line. A job accepts up to 100,000 numbers.",
+            "url": "https://phoneverifier.induswebagency.com/#how"
+          },
+          {
+            "@type": "HowToStep",
+            "position": 3,
+            "name": "Read the job",
+            "text": "Open the job for progress and counts: valid mobile, valid other, unallocated, invalid, and unknown. Each row includes E.164, line type, classification, block status, an internal score, and live status. Live status stays not configured until HLR API keys are set.",
+            "url": "https://phoneverifier.induswebagency.com/#how"
+          },
+          {
+            "@type": "HowToStep",
+            "position": 4,
+            "name": "Export a CSV",
+            "text": "Export all rows, structurally valid rows, or SMS candidates. SMS candidates are structurally valid numbers whose line type is mobile or fixed-or-mobile. If a Live HLR provider is configured, you can also export rows whose live status is active.",
+            "url": "https://phoneverifier.induswebagency.com/#how"
+          }
+        ]
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://phoneverifier.induswebagency.com/#faq",
+        "url": "https://phoneverifier.induswebagency.com/#faq",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "What is Bulk Phone Number Verifier?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Bulk Phone Number Verifier (PhoneVerify) is an MIT-licensed web app for cleaning phone lists before SMS or outreach. It normalizes numbers with Google libphonenumber and, in the self-hosted dashboard, compares United States, United Kingdom, and Germany numbers with regulator block data. The browser checker on this site runs only the numbering-plan step, on your device."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Can it tell if a phone number is currently active?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Format checks and regulator block checks do not mean a SIM is registered on a carrier network. Currently-active status is available only after you set HLR_API_KEY and HLR_API_SECRET for the built-in hlr-lookups.com provider. Until then, results are labeled structurally valid or block allocated, not live."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which countries does it cover?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "libphonenumber format checks are global. Number-block data is for the United States (NANPA), the United Kingdom (Ofcom), and Germany (BNetzA). The repository seed loads example blocks for those three countries. A valid number in a country with no block rows is classified unknown / no coverage."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does the browser checker upload my numbers?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. The page at /app/ parses numbers in your browser and builds the CSV on your device. It does not run regulator-block lookups or HLR lookups, and it does not send the list to a server."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Does the self-hosted app send numbers to a third party?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Not for structural or block checks. Those run on your machine or server. You can optionally sync NANPA, Ofcom, or BNetzA files yourself. A live lookup is sent to hlr-lookups.com only when the HLR keys are set. Set HLR_BULK_ENABLED to false to keep live checks on the single-number page and skip them during bulk jobs."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What do the classifications mean?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Invalid means the numbering plan rejects the number. Unallocated means it is valid and the loaded block data marks that prefix free. Structurally valid means it is valid and not sitting in a free block. An allocated block is a regulator assignment of that range, not proof the line is in service. Unknown / no coverage means the number is valid but that country has no block rows loaded. If the country does have block rows and this prefix is simply missing, the row stays structurally valid and the block status is unknown. The internal score weights format, line type, and block status (and live status when HLR is on). It is not a measured accuracy rate."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "What is an SMS candidate?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "An SMS candidate is a structurally valid row whose line type is mobile or fixed-or-mobile. The job page can export those rows as CSV. A valid mobile classified unknown, because its country has no block data, is not included in that export."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Who makes this site?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "INDUS Web Agency makes this site. The source code is the MIT-licensed repository github.com/mafzalkalwardev/bulk-phone-number-verifier. For a custom verifier or other build, contact INDUS Web Agency."
+            }
+          }
+        ]
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip" href="#content">Skip to content</a>
+  <header class="site-header">
+    <div class="wrap header-bar">
+      <a class="logo" href="./" aria-current="page">
+        <svg class="mark" viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <rect width="32" height="32" rx="8" fill="#e7f3ec"/>
+          <path fill="#0b5a38" d="M9 14.2c0-2.7 2-5 4.8-5h.5c.7 0 1.2.5 1.2 1.2v1.1c0 .5-.3 1-.7 1.2l-1.3.5c-.3.1-.4.4-.3.6.5 1.2 1.5 2.2 2.7 2.7.2.1.5 0 .6-.3l.5-1.3c.2-.4.6-.7 1.1-.7h1.1c.7 0 1.2.5 1.2 1.2v.5c0 2.8-2.3 4.8-5 4.8-3.6 0-6.4-3.1-6.4-6.5z"/>
+        </svg>
+        Phone<span>Verify</span>
+      </a>
+      <nav class="nav-primary" aria-label="Primary">
+        <a href="#definition">Definition</a>
+        <a href="#features">Features</a>
+        <a href="#how">How it works</a>
+        <a href="#use-cases">Use cases</a>
+        <a href="#faq">FAQ</a>
+        <a class="header-cta" href="app/">Check a list</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content">
+    <div class="wrap hero">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <ol>
+          <li aria-current="page">Bulk Phone Number Verifier</li>
+        </ol>
+      </nav>
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">MIT license · self-hosted dashboard · browser check</p>
+          <h1>Bulk Phone Number Verifier</h1>
+          <p class="lede">Clean a phone list before you spend on SMS. Numbering-plan checks run in the browser. The self-hosted app adds US, UK, and Germany regulator blocks, job exports, and an optional Live HLR slot.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="app/">Check a list in the browser</a>
+            <a class="btn btn-ghost" href="https://github.com/mafzalkalwardev/bulk-phone-number-verifier" target="_blank" rel="noopener noreferrer">Source code on GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+            <a class="btn btn-ghost" href="https://induswebagency.com/" target="_blank" rel="noopener noreferrer">Contact INDUS Web Agency<span class="sr-only"> (opens in a new tab)</span></a>
+          </div>
+          <section class="definition" id="definition" aria-labelledby="definition-heading">
+            <h2 id="definition-heading"><span class="idx" aria-hidden="true">01</span>What is Bulk Phone Number Verifier?</h2>
+            <p>Bulk Phone Number Verifier (PhoneVerify) is an MIT-licensed web app for cleaning phone lists before SMS or outreach. It normalizes numbers with Google libphonenumber and, in the self-hosted dashboard, compares United States, United Kingdom, and Germany numbers with regulator block data. The browser checker on this site runs only the numbering-plan step, on your device.</p>
+            <p>Results are labeled structurally valid or block allocated. They are not labeled currently active unless the Live HLR provider is configured.</p>
+          </section>
+        </div>
+        <aside class="sheet specimen" aria-labelledby="specimen-heading">
+          <header>
+            <h2 id="specimen-heading">Numbering-plan specimen</h2>
+            <p>Labels libphonenumber returns for these inputs. Format examples, not proof a line is in service. 555-01 and Ofcom drama numbers are reserved for fiction and still parse as structurally valid.</p>
+          </header>
+          <div class="table-scroll" tabindex="0">
+            <table>
+              <caption class="sr-only">Sample numbering-plan results for five inputs</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Input</th>
+                  <th scope="col">Result</th>
+                  <th scope="col">E.164</th>
+                  <th scope="col">Country</th>
+                  <th scope="col">Line type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="num">+1 202-555-0148</td>
+                  <td class="ok">structurally valid</td>
+                  <td class="num">+12025550148</td>
+                  <td>US</td>
+                  <td>fixed line or mobile</td>
+                </tr>
+                <tr>
+                  <td class="num">+44 20 7946 0958</td>
+                  <td class="ok">structurally valid</td>
+                  <td class="num">+442079460958</td>
+                  <td>GB</td>
+                  <td>fixed line</td>
+                </tr>
+                <tr>
+                  <td class="num">+49 30 901820</td>
+                  <td class="ok">structurally valid</td>
+                  <td class="num">+4930901820</td>
+                  <td>DE</td>
+                  <td>fixed line</td>
+                </tr>
+                <tr>
+                  <td class="num">+49 151 12345678</td>
+                  <td class="ok">structurally valid</td>
+                  <td class="num">+4915112345678</td>
+                  <td>DE</td>
+                  <td>mobile</td>
+                </tr>
+                <tr>
+                  <td class="num">not-a-number</td>
+                  <td class="bad">invalid</td>
+                  <td>—</td>
+                  <td>—</td>
+                  <td>—</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <section class="section" aria-labelledby="checks-heading">
+      <div class="wrap">
+        <h2 id="checks-heading"><span class="idx" aria-hidden="true">02</span>Three different answers</h2>
+        <p class="intro">The app keeps these checks separate. A pass on one of them does not imply the others.</p>
+        <div class="table-scroll" tabindex="0">
+          <table>
+            <caption class="sr-only">What each check means and where it runs</caption>
+            <thead>
+              <tr>
+                <th scope="col">Check</th>
+                <th scope="col">Where it runs</th>
+                <th scope="col">A positive result means</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Format, E.164, country, line type</th>
+                <td>Browser checker and self-hosted app</td>
+                <td>The numbering plan accepts the number.</td>
+              </tr>
+              <tr>
+                <th scope="row">Regulator block allocated or free</th>
+                <td>Self-hosted app, when US, UK, or DE block rows are loaded</td>
+                <td>The prefix is in the loaded block database. Allocated means assigned to a carrier, not that the line is live.</td>
+              </tr>
+              <tr>
+                <th scope="row">Currently active on the network</th>
+                <td>Self-hosted app, only after HLR keys are set</td>
+                <td>The hlr-lookups.com provider returned an active status for that query.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="interface" aria-labelledby="interface-heading">
+      <div class="wrap">
+        <h2 id="interface-heading"><span class="idx" aria-hidden="true">03</span>The interface</h2>
+        <p class="intro">Both screenshots are from this repository’s running UI. The first is the browser checker shipped in this static site. The second is the self-hosted job view after a local run against the project’s seed blocks.</p>
+        <div class="shots">
+          <figure class="shot">
+            <picture>
+              <source srcset="media/browser-checker.avif" type="image/avif" />
+              <source srcset="media/browser-checker.webp" type="image/webp" />
+              <img src="media/browser-checker.png" width="1280" height="1156" alt="Browser checker on this site after checking five sample numbers. Four rows are structurally valid, with E.164, country, and line type. The text not-a-number is invalid. A note says this is not a live-network or regulator block check." loading="lazy" decoding="async" />
+            </picture>
+            <figcaption>Browser checker at <a href="app/">/app/</a>. Numbering-plan labels only. Nothing is uploaded.</figcaption>
+          </figure>
+          <figure class="shot">
+            <picture>
+              <source srcset="media/job-results.avif" type="image/avif" />
+              <source srcset="media/job-results.webp" type="image/webp" />
+              <img src="media/job-results.png" width="1100" height="875" alt="Self-hosted job named Sample outreach list, status completed, 5 of 5. Counts are 2 valid mobile, 2 valid other, 0 unallocated, 1 invalid, and 0 unknown. Rows show structurally valid US, UK, and Germany numbers with seed block labels, plus an invalid row. Live status is not configured." loading="lazy" decoding="async" />
+            </picture>
+            <figcaption>Self-hosted job view. Block carriers in this shot come from the repository seed (“Example Carrier”, “Example London Geo”, and similar), which stands in until you sync NANPA, Ofcom, or BNetzA. The score is the app’s internal weighting, not a measured accuracy rate. Live HLR is not configured.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="features" aria-labelledby="features-heading">
+      <div class="wrap">
+        <h2 id="features-heading"><span class="idx" aria-hidden="true">04</span>Features</h2>
+        <div class="grid-2">
+          <article class="card">
+            <p class="tag">In the browser</p>
+            <h3>Numbering-plan check, no account</h3>
+            <ul class="clean">
+              <li>Paste one number per line and set a default country for numbers that omit a country code.</li>
+              <li>Each row is structurally valid, possible but not valid, or invalid.</li>
+              <li>Columns: E.164, country, and line type from libphonenumber metadata.</li>
+              <li>Download the same rows as CSV. The file is built on your device.</li>
+            </ul>
+          </article>
+          <article class="card">
+            <p class="tag">Self-hosted</p>
+            <h3>Dashboard, jobs, and exports</h3>
+            <ul class="clean">
+              <li>Upload a CSV or text file, or paste a list. Name the phone column when the CSV header needs it. Up to 100,000 numbers per job.</li>
+              <li>Async jobs with progress, plus a single-number check page.</li>
+              <li>Filters for structurally valid, SMS candidates, unallocated, invalid, and unknown.</li>
+              <li>CSV export: all rows, structurally valid rows, or SMS candidates. With HLR configured, also rows whose live status is active.</li>
+              <li>Coverage page with sync hooks for NANPA, Ofcom, BNetzA, the bundled seed, or all of them.</li>
+              <li>Lookup cache. The default TTL in <span class="mono">.env.example</span> is 30 days.</li>
+              <li>Auth.js credentials, Prisma, SQLite by default or PostgreSQL, and an in-process queue or BullMQ when <span class="mono">REDIS_URL</span> is set.</li>
+            </ul>
+          </article>
+        </div>
+        <h3 style="margin-top:1.4rem">Line types the parsers can return</h3>
+        <ul class="types">
+          <li>mobile</li>
+          <li>fixed line</li>
+          <li>fixed line or mobile</li>
+          <li>toll-free</li>
+          <li>premium rate</li>
+          <li>shared cost</li>
+          <li>VoIP</li>
+          <li>personal number</li>
+          <li>pager</li>
+          <li>UAN</li>
+          <li>voicemail</li>
+          <li>unknown</li>
+        </ul>
+        <p>The self-hosted app reads these from <span class="mono">google-libphonenumber</span>. The browser checker reads them from <span class="mono">libphonenumber-js</span> max metadata. When metadata has no type, the label is unknown.</p>
+      </div>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-heading">
+      <div class="wrap">
+        <h2 id="how-heading"><span class="idx" aria-hidden="true">05</span>How it works</h2>
+        <div class="split">
+          <div>
+            <h3>Clean a list on your server</h3>
+            <p>This is the full workflow: format, regulator blocks, stats, and CSV export. It does not mark a line as currently active unless a Live HLR provider is configured.</p>
+            <ol class="steps">
+              <li><strong>Install and start the dashboard.</strong> Clone the repository, copy .env.example to .env, install dependencies with npm, run the Prisma migration and the seed script, then start the app with npm run dev. You need Node.js 20 or newer.</li>
+              <li><strong>Upload a list.</strong> Sign in, open Upload, and set the default country used when a number has no country code. Optionally name the CSV phone column. Upload a CSV or text file, or paste one number per line. A job accepts up to 100,000 numbers.</li>
+              <li><strong>Read the job.</strong> Open the job for progress and counts: valid mobile, valid other, unallocated, invalid, and unknown. Each row includes E.164, line type, classification, block status, an internal score, and live status. Live status stays not configured until HLR API keys are set.</li>
+              <li><strong>Export a CSV.</strong> Export all rows, structurally valid rows, or SMS candidates. SMS candidates are structurally valid numbers whose line type is mobile or fixed-or-mobile. If a Live HLR provider is configured, you can also export rows whose live status is active.</li>
+            </ol>
+            <p>Block feeds the importers are written against: <a href="https://nationalnanpa.com/reports/co-code-reports/cocodes_assign" target="_blank" rel="noopener noreferrer">NANPA CO code assignments<span class="sr-only"> (opens in a new tab)</span></a>, <a href="https://www.ofcom.org.uk/phones-and-broadband/phone-numbers/numbering-data" target="_blank" rel="noopener noreferrer">Ofcom numbering data<span class="sr-only"> (opens in a new tab)</span></a>, and <a href="https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Nummerierung/start.html" target="_blank" rel="noopener noreferrer">BNetzA Nummerierung<span class="sr-only"> (opens in a new tab)</span></a>. To turn on live status, set <span class="mono">HLR_API_KEY</span> and <span class="mono">HLR_API_SECRET</span> from your hlr-lookups.com API settings and restart the app. The coverage page then shows Live HLR as configured. Mapped results are active, absent, or invalid.</p>
+          </div>
+          <div>
+            <h3>Check numbering-plan validity without installing</h3>
+            <p>Use this when you only need format, country, and line type.</p>
+            <ol class="steps">
+              <li><strong>Open the browser checker.</strong> Go to <a href="app/">the checker</a>.</li>
+              <li><strong>Paste the list.</strong> Put one number per line. Set a default country for numbers that do not start with a country code.</li>
+              <li><strong>Read the rows.</strong> Choose Check list. Each row is structurally valid, possible but not valid, or invalid, with E.164, country, and line type when the parser has them.</li>
+              <li><strong>Download CSV.</strong> Choose Download CSV. The file is created in your browser.</li>
+            </ol>
+            <div class="note">
+              <p><strong>Limit of this page.</strong> The browser checker does not load NANPA, Ofcom, or BNetzA blocks, and it does not call HLR. It does not upload the list.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="use-cases" aria-labelledby="use-heading">
+      <div class="wrap">
+        <h2 id="use-heading"><span class="idx" aria-hidden="true">06</span>Use cases</h2>
+        <div class="grid-2">
+          <article class="card">
+            <h3>SMS and outreach lists</h3>
+            <p>Drop numbers the numbering plan rejects, and drop prefixes the loaded block data marks free, before a campaign spends on messages.</p>
+          </article>
+          <article class="card">
+            <h3>CRM and lead operations</h3>
+            <p>Normalize a messy phone column to E.164 and keep the country and line type next to each row.</p>
+          </article>
+          <article class="card">
+            <h3>Agencies and freelancers</h3>
+            <p>Self-host list cleanup and describe the result as structurally valid or block allocated, rather than as a live line.</p>
+          </article>
+          <article class="card">
+            <h3>Developers</h3>
+            <p>Run a Next.js and Prisma pipeline with a <span class="mono">LiveLookupProvider</span> slot. The built-in provider is hlr-lookups.com. The code can take another provider through that interface; Twilio, CM.com, CheckMobi, and SIGTRAN are not shipped as integrations.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq" aria-labelledby="faq-heading">
+      <div class="wrap">
+        <h2 id="faq-heading"><span class="idx" aria-hidden="true">07</span>FAQ</h2>
+        <div class="faq-list">
+          <article>
+            <h3>What is Bulk Phone Number Verifier?</h3>
+            <p>Bulk Phone Number Verifier (PhoneVerify) is an MIT-licensed web app for cleaning phone lists before SMS or outreach. It normalizes numbers with Google libphonenumber and, in the self-hosted dashboard, compares United States, United Kingdom, and Germany numbers with regulator block data. The browser checker on this site runs only the numbering-plan step, on your device.</p>
+          </article>
+          <article>
+            <h3>Can it tell if a phone number is currently active?</h3>
+            <p>No. Format checks and regulator block checks do not mean a SIM is registered on a carrier network. Currently-active status is available only after you set HLR_API_KEY and HLR_API_SECRET for the built-in hlr-lookups.com provider. Until then, results are labeled structurally valid or block allocated, not live.</p>
+          </article>
+          <article>
+            <h3>Which countries does it cover?</h3>
+            <p>libphonenumber format checks are global. Number-block data is for the United States (NANPA), the United Kingdom (Ofcom), and Germany (BNetzA). The repository seed loads example blocks for those three countries. A valid number in a country with no block rows is classified unknown / no coverage.</p>
+          </article>
+          <article>
+            <h3>Does the browser checker upload my numbers?</h3>
+            <p>No. The page at <a href="app/">/app/</a> parses numbers in your browser and builds the CSV on your device. It does not run regulator-block lookups or HLR lookups, and it does not send the list to a server.</p>
+          </article>
+          <article>
+            <h3>Does the self-hosted app send numbers to a third party?</h3>
+            <p>Not for structural or block checks. Those run on your machine or server. You can optionally sync NANPA, Ofcom, or BNetzA files yourself. A live lookup is sent to hlr-lookups.com only when the HLR keys are set. Set HLR_BULK_ENABLED to false to keep live checks on the single-number page and skip them during bulk jobs.</p>
+          </article>
+          <article>
+            <h3>What do the classifications mean?</h3>
+            <p>Invalid means the numbering plan rejects the number. Unallocated means it is valid and the loaded block data marks that prefix free. Structurally valid means it is valid and not sitting in a free block. An allocated block is a regulator assignment of that range, not proof the line is in service. Unknown / no coverage means the number is valid but that country has no block rows loaded. If the country does have block rows and this prefix is simply missing, the row stays structurally valid and the block status is unknown. The internal score weights format, line type, and block status (and live status when HLR is on). It is not a measured accuracy rate.</p>
+          </article>
+          <article>
+            <h3>What is an SMS candidate?</h3>
+            <p>An SMS candidate is a structurally valid row whose line type is mobile or fixed-or-mobile. The job page can export those rows as CSV. A valid mobile classified unknown, because its country has no block data, is not included in that export.</p>
+          </article>
+          <article>
+            <h3>Who makes this site?</h3>
+            <p>INDUS Web Agency makes this site. The source code is the MIT-licensed repository <a href="https://github.com/mafzalkalwardev/bulk-phone-number-verifier" target="_blank" rel="noopener noreferrer">github.com/mafzalkalwardev/bulk-phone-number-verifier<span class="sr-only"> (opens in a new tab)</span></a>. For a custom verifier or other build, contact <a href="https://induswebagency.com/" target="_blank" rel="noopener noreferrer">INDUS Web Agency<span class="sr-only"> (opens in a new tab)</span></a>.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="start-heading">
+      <div class="wrap">
+        <div class="cta-band">
+          <h2 id="start-heading">Start with a list, or with the source</h2>
+          <p>Check numbering-plan validity in the browser, clone the dashboard, or talk to INDUS Web Agency about a custom build.</p>
+          <div class="actions">
+            <a class="btn btn-primary" href="app/">Use the browser checker</a>
+            <a class="btn btn-ghost" href="https://github.com/mafzalkalwardev/bulk-phone-number-verifier" target="_blank" rel="noopener noreferrer">View on GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+            <a class="btn btn-ghost" href="https://induswebagency.com/" target="_blank" rel="noopener noreferrer">Contact INDUS Web Agency<span class="sr-only"> (opens in a new tab)</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot-grid">
+      <p>Made by <a href="https://induswebagency.com/" target="_blank" rel="noopener noreferrer">INDUS Web Agency<span class="sr-only"> (opens in a new tab)</span></a>, Islamabad. MIT license on <a href="https://github.com/mafzalkalwardev/bulk-phone-number-verifier/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a>.</p>
+      <p>Regulator numbering data stays under the terms of NANPA, Ofcom, BNetzA, and any provider you connect. You are responsible for lawful use of phone lists.</p>
+      <p><a href="llms.txt">llms.txt</a> · <a href="llms-full.txt">llms-full.txt</a></p>
+    </div>
+  </footer>
+</body>
+</html>
