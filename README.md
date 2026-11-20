@@ -2,6 +2,8 @@
 
 # Bulk Phone Number Verifier
 
+Official site: https://phoneverifier.induswebagency.com/
+
 <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=700&size=26&duration=2800&pause=700&color=3ECF8E&center=true&vCenter=true&width=920&lines=Bulk+Phone+List+Cleanup+Dashboard;libphonenumber+%2B+Regulator+Block+Checks;US+%7C+UK+%7C+Germany+%7C+Global;Next.js+%2B+Prisma+%2B+Auth.js" alt="Bulk Phone Number Verifier typing headline" />
 
 <p>
