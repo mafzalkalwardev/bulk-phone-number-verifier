@@ -1,0 +1,31 @@
+{
+  "name": "Bulk Phone Number Verifier",
+  "short_name": "PhoneVerify",
+  "description": "Numbering-plan checks, US/UK/DE regulator blocks in the self-hosted app, and an optional Live HLR slot.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3efe6",
+  "theme_color": "#10241c",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

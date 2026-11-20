@@ -1,0 +1,82 @@
+# Bulk Phone Number Verifier — full notes
+
+> Bulk Phone Number Verifier (PhoneVerify) is an MIT-licensed web app for cleaning phone lists before SMS or outreach. This static site is published by INDUS Web Agency at https://phoneverifier.induswebagency.com/. The source repository is https://github.com/mafzalkalwardev/bulk-phone-number-verifier.
+
+These notes describe only what the repository and this static site actually do. They do not state user counts, testimonials, ratings, prices, or accuracy percentages.
+
+## What it is
+
+The product has two surfaces:
+
+1. A self-hosted Next.js dashboard. It classifies each number with Google libphonenumber (E.164, country, line type) and, for countries that have block rows loaded, a regulator number-block database. The United States (NANPA), the United Kingdom (Ofcom), and Germany (BNetzA) are the markets with importers and seed blocks.
+2. A browser checker at https://phoneverifier.induswebagency.com/app/. It parses numbers with libphonenumber-js (max metadata) on the device. It labels each row structurally valid, possible but not valid, or invalid, and shows E.164, country, and line type. It can download a CSV. It does not upload the list, query block databases, or call HLR.
+
+## What a result means
+
+- Invalid: the numbering plan rejects the number (or it is not even a possible number).
+- Unallocated: the number is valid and the loaded block data marks that prefix free.
+- Structurally valid: the number is valid and is not sitting in a free block. If a matching block is allocated, that means a regulator assigned the range. It does not mean the subscriber is currently on the network. If the country has block rows but this prefix is missing, the row is still structurally valid and the block status is unknown.
+- Unknown / no coverage: the number is valid, but that country has no block rows loaded.
+- Internal score: a weighting in the self-hosted app from format, line type, and block status, plus live status when HLR is configured. It is not a measured accuracy rate.
+- Currently active: only when HLR_API_KEY and HLR_API_SECRET are set for hlr-lookups.com. The provider maps CONNECTED, ABSENT, and INVALID_MSISDN to active, absent, and invalid. Without keys, live status is not configured. There is no honest free built-in way to prove a SIM is live. An open-source SS7 stack alone is not treated as that check.
+- SMS candidate: classification structurally valid, and line type mobile or fixed-or-mobile. Valid mobiles in a country with no block rows stay unknown and are not in the SMS-candidate export.
+
+Line types the libraries can return: mobile, fixed line, fixed line or mobile, toll-free, premium rate, shared cost, VoIP, personal number, pager, UAN, voicemail, or unknown.
+
+Sample numbering-plan output (libphonenumber-js max metadata), format examples only, including fictional 555-01 and Ofcom drama ranges that still parse as valid:
+
+- +1 202-555-0148 → structurally valid, +12025550148, US, fixed line or mobile
+- +44 20 7946 0958 → structurally valid, +442079460958, GB, fixed line
+- +49 30 901820 → structurally valid, +4930901820, DE, fixed line
+- +49 151 12345678 → structurally valid, +4915112345678, DE, mobile
+- not-a-number → invalid
+
+## How the self-hosted job works
+
+1. Clone the repository, copy .env.example to .env, npm install, run the Prisma migration and the seed script, then npm run dev. Node.js 20 or newer. Optional: npm run worker. Default database URL is SQLite (file:./dev.db). PostgreSQL is supported. REDIS_URL switches the queue to BullMQ; otherwise jobs run in-process.
+2. Sign in with Auth.js credentials (an account created on that instance, or the local user created by the seed script). Open Upload. Set the default country (the form offers US, GB, DE, CA, AU, FR, IN) for numbers that omit a country code. Optionally name the CSV phone column. Upload a CSV or text file, or paste one number per line. Maximum 100,000 numbers.
+3. Open the job. It shows progress and counts for valid mobile, valid other, unallocated, invalid, and unknown. Rows include E.164, line type, classification, block prefix, carrier, source, internal score, and live fields.
+4. Export CSV: all rows, structurally valid ("clean"), SMS candidates, or, when HLR is configured, live active.
+
+Coverage sync accepts source nanpa, ofcom, bnetza, seed, or all, from the dashboard or an authenticated POST to /api/admin/sync. Public sources the importers point at:
+
+- https://nationalnanpa.com/reports/co-code-reports/cocodes_assign
+- https://www.ofcom.org.uk/phones-and-broadband/phone-numbers/numbering-data
+- https://www.bundesnetzagentur.de/DE/Fachthemen/Telekommunikation/Nummerierung/start.html
+
+The seed loads example carriers (names such as "Example Carrier NY" and "Example London Geo"). Those names are placeholders until a real feed is synced.
+
+Lookup cache TTL defaults to 30 days via LOOKUP_CACHE_TTL_DAYS.
+
+Live HLR: create keys at https://www.hlr-lookups.com/en/api-settings and set HLR_API_KEY, HLR_API_SECRET, and optionally HLR_BULK_ENABLED. Restart the app. The coverage page reports whether Live HLR is configured. HLR_BULK_ENABLED=false keeps live calls off bulk jobs. The LiveLookupProvider interface can be replaced in code. Twilio Lookup, CM.com, CheckMobi, and SIGTRAN are not included as ready-made integrations.
+
+## Who it is for
+
+- SMS and outreach teams removing numbering-plan rejects and free blocks before a send.
+- CRM and lead operations normalizing a phone column to E.164 with a line type.
+- Agencies that need list cleanup without calling offline results "live".
+- Developers self-hosting the Next.js pipeline.
+
+## Stack
+
+- UI: Next.js App Router, React, TypeScript, Tailwind CSS.
+- Auth: Auth.js (NextAuth) credentials.
+- DB: Prisma, SQLite default or PostgreSQL.
+- Queue: in-process, or BullMQ plus Redis.
+- Validation: google-libphonenumber in the server, libphonenumber-js in the static checker.
+- Blocks: NANPA, Ofcom, and BNetzA importers plus seed data.
+
+## This website
+
+- Canonical: https://phoneverifier.induswebagency.com/
+- Browser checker: https://phoneverifier.induswebagency.com/app/
+- Static files are the `site/` directory, copied as-is to the web root.
+- Machine-readable companion: https://phoneverifier.induswebagency.com/llms.txt
+- Sitemap: https://phoneverifier.induswebagency.com/sitemap.xml
+- robots.txt allows general crawlers and GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bingbot, and similar agents.
+
+## Publisher
+
+INDUS Web Agency — https://induswebagency.com/ — Islamabad, Pakistan — induswebagency@gmail.com.
+
+Regulator numbering data remains subject to the terms of NANPA, Ofcom, BNetzA, and any upstream provider you connect. Users are responsible for lawful use of phone lists and telecom regulations in their jurisdiction.

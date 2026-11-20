@@ -11,6 +11,14 @@ const metaSchema = z.object({
   phoneColumn: z.string().optional(),
 });
 
+function looksLikeHeaderLabel(field: string): boolean {
+  const value = field.trim();
+  if (!value) return false;
+  // A pasted phone list has no header. Papa would treat the first number as one.
+  if (/^\+?[\d\s().\-]+$/.test(value)) return false;
+  return /[A-Za-z]/.test(value);
+}
+
 function extractNumbersFromText(text: string, phoneColumn?: string): string[] {
   const trimmed = text.trim();
   if (!trimmed) return [];
@@ -21,8 +29,10 @@ function extractNumbersFromText(text: string, phoneColumn?: string): string[] {
     skipEmptyLines: true,
   });
 
-  if (parsed.data.length > 0 && parsed.meta.fields && parsed.meta.fields.length > 0) {
-    const fields = parsed.meta.fields;
+  const fields = parsed.meta.fields ?? [];
+  const headerIsLabels = fields.some(looksLikeHeaderLabel);
+
+  if (parsed.data.length > 0 && fields.length > 0 && headerIsLabels) {
     const col =
       phoneColumn && fields.includes(phoneColumn)
         ? phoneColumn
@@ -33,7 +43,7 @@ function extractNumbersFromText(text: string, phoneColumn?: string): string[] {
       .filter(Boolean);
   }
 
-  // Plain list: one number per line
+  // Plain list: one number per line (also the first line)
   return trimmed
     .split(/\r?\n/)
     .map((l) => l.split(/[,;\t]/)[0].trim())
@@ -76,10 +86,12 @@ export async function POST(req: Request) {
         ? String(form.get("phoneColumn"))
         : undefined;
       const file = form.get("file");
-      if (file && typeof file !== "string") {
+      const pasted = form.get("text");
+      // An empty <input type="file"> still arrives as a File. Prefer pasted text in that case.
+      if (file && typeof file !== "string" && file.size > 0) {
         fileText = await file.text();
-      } else if (form.get("text")) {
-        fileText = String(form.get("text"));
+      } else if (pasted) {
+        fileText = String(pasted);
       }
     } else {
       const body = await req.json();
